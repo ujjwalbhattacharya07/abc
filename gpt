@@ -1,0 +1,55 @@
+@@ -0,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GPT-3 Chatbot</title>
+</head>
+<body>
+    <div id="chatbox">
+        <div id="chatlog"></div>
+        <input type="text" id="userInput" placeholder="Type your message..." />
+        <button id="sendMessage">Send</button>
+    </div>
+
+    <script>
+        // Replace 'YOUR_API_KEY' with your actual OpenAI API key
+        const apiKey = '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';
+        const apiUrl = 'https://api.openai.com/v1/engines/davinci-codex/completions';
+
+        const chatlog = document.getElementById('chatlog');
+        const userInput = document.getElementById('userInput');
+        const sendMessage = document.getElementById('sendMessage');
+
+        sendMessage.addEventListener('click', () => {
+            const userMessage = userInput.value;
+            appendMessage('You', userMessage);
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    prompt: `User: ${userMessage}\nAI:`,
+                    max_tokens: 50, // Adjust the response length as needed
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const aiMessage = data.choices[0].text.trim();
+                appendMessage('AI', aiMessage);
+            })
+            .catch(error => console.error(error));
+
+            userInput.value = '';
+        });
+
+        function appendMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatlog.appendChild(messageElement);
+        }
+    </script>
+</body>
+</html>
